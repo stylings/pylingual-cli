@@ -1,0 +1,11 @@
+/pylingual
+/dist/
+/bin/
+/coverage.out
+
+# Local caches and editor state
+/.cache/
+/.idea/
+/.vscode/
+*.swp
+*.tmp
