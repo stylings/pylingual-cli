@@ -42,3 +42,7 @@ make vet
 make race
 make check
 ```
+
+## License
+
+MIT © 2026 identities@tuta.com. See [LICENSE](LICENSE).
