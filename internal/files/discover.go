@@ -11,13 +11,11 @@ import (
 	"github.com/cold/pylingual-cli/internal/job"
 )
 
-// Discovery contains planned decompilation jobs and non-fatal input warnings.
 type Discovery struct {
 	Jobs     []job.Job
 	Warnings []string
 }
 
-// Discover resolves file and directory inputs into recursive .pyc jobs.
 func Discover(inputs []string, outDir string) (Discovery, error) {
 	var result Discovery
 	usedOutputs := make(map[string]int)

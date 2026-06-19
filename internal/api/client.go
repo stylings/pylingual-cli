@@ -21,45 +21,38 @@ const (
 	defaultBackoff  = 300 * time.Millisecond
 )
 
-// Config contains API client settings.
 type Config struct {
 	BaseURL string
 	Timeout time.Duration
 }
 
-// Client talks to the Pylingual API.
 type Client struct {
 	baseURL string
 	headers map[string]string
 	http    *http.Client
 }
 
-// UploadResponse is returned by the upload endpoint.
 type UploadResponse struct {
 	Identifier string `json:"identifier"`
 	Message    string `json:"message"`
 	Success    bool   `json:"success"`
 }
 
-// ProgressResponse is returned by the progress endpoint.
 type ProgressResponse struct {
 	Identifier string `json:"identifier"`
 	Stage      string `json:"stage"`
 	Success    bool   `json:"success"`
 }
 
-// ViewResponse is returned by the decompilation view endpoint.
 type ViewResponse struct {
 	Success       bool           `json:"success"`
 	EditorContent *EditorContent `json:"editor_content"`
 }
 
-// EditorContent wraps decompiled file content.
 type EditorContent struct {
 	FileRawPython *FileRawPython `json:"file_raw_python"`
 }
 
-// FileRawPython contains the decompiled Python source.
 type FileRawPython struct {
 	DecompilationSuccessful bool   `json:"decompilation_successful"`
 	EditorContent           string `json:"editor_content"`
@@ -77,7 +70,6 @@ func (e statusError) Error() string {
 	return fmt.Sprintf("HTTP %d: %s", e.code, e.body)
 }
 
-// NewClient creates a configured Pylingual API client.
 func NewClient(cfg Config) *Client {
 	timeout := cfg.Timeout
 	if timeout <= 0 {
@@ -104,7 +96,6 @@ func NewClient(cfg Config) *Client {
 	}
 }
 
-// Upload uploads one .pyc file and returns its Pylingual identifier.
 func (c *Client) Upload(ctx context.Context, path string) (*UploadResponse, error) {
 	var out *UploadResponse
 	err := retry(ctx, func() error {
@@ -118,7 +109,6 @@ func (c *Client) Upload(ctx context.Context, path string) (*UploadResponse, erro
 	return out, err
 }
 
-// Poll fetches the current decompilation stage.
 func (c *Client) Poll(ctx context.Context, identifier string) (*ProgressResponse, error) {
 	var out *ProgressResponse
 	err := retry(ctx, func() error {
@@ -146,7 +136,6 @@ func (c *Client) Poll(ctx context.Context, identifier string) (*ProgressResponse
 	return out, err
 }
 
-// Fetch retrieves the decompiled Python source for an identifier.
 func (c *Client) Fetch(ctx context.Context, identifier string) (*ViewResponse, error) {
 	var out *ViewResponse
 	err := retry(ctx, func() error {

@@ -13,7 +13,6 @@ import (
 	"github.com/cold/pylingual-cli/internal/job"
 )
 
-// Status describes a job's current lifecycle state.
 type Status string
 
 const (
@@ -27,7 +26,6 @@ const (
 	StatusFailed    Status = "failed"
 )
 
-// Event reports one visible job state change.
 type Event struct {
 	JobID      int
 	InputPath  string
@@ -38,7 +36,6 @@ type Event struct {
 	At         time.Time
 }
 
-// Summary contains batch completion counts.
 type Summary struct {
 	Total     int
 	Succeeded int
@@ -46,26 +43,22 @@ type Summary struct {
 	Failed    int
 }
 
-// Config controls runner concurrency and API polling cadence.
 type Config struct {
 	Concurrency  int
 	PollInterval time.Duration
 }
 
-// Client is the API surface used by Runner.
 type Client interface {
 	Upload(ctx context.Context, path string) (*api.UploadResponse, error)
 	Poll(ctx context.Context, identifier string) (*api.ProgressResponse, error)
 	Fetch(ctx context.Context, identifier string) (*api.ViewResponse, error)
 }
 
-// Runner decompiles a batch of jobs and emits progress events.
 type Runner struct {
 	client Client
 	cfg    Config
 }
 
-// New creates a runner.
 func New(client Client, cfg Config) *Runner {
 	if cfg.Concurrency < 1 {
 		cfg.Concurrency = 1
@@ -76,7 +69,6 @@ func New(client Client, cfg Config) *Runner {
 	return &Runner{client: client, cfg: cfg}
 }
 
-// Start begins processing jobs and closes the returned channel when the batch ends.
 func (r *Runner) Start(ctx context.Context, jobs []job.Job) <-chan Event {
 	events := make(chan Event, len(jobs)+r.cfg.Concurrency)
 
@@ -215,7 +207,6 @@ func normalizePythonSource(source string) string {
 	return source
 }
 
-// Summarize updates a summary with a terminal event.
 func Summarize(summary Summary, event Event) Summary {
 	switch event.Status {
 	case StatusSucceeded:

@@ -51,7 +51,6 @@ var (
 	summaryStyle = lipgloss.NewStyle().Bold(true)
 )
 
-// RunRich renders interactive Bubble Tea progress.
 func RunRich(ctx context.Context, cancel context.CancelFunc, jobs []job.Job, events <-chan runner.Event) (runner.Summary, error) {
 	spin := spinner.New()
 	spin.Spinner = spinner.Dot

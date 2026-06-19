@@ -9,7 +9,6 @@ import (
 	"github.com/cold/pylingual-cli/internal/runner"
 )
 
-// RunPlain renders line-based progress for non-interactive output.
 func RunPlain(out io.Writer, jobs []job.Job, events <-chan runner.Event) runner.Summary {
 	summary := runner.Summary{Total: len(jobs)}
 	lastStage := make(map[int]string, len(jobs))

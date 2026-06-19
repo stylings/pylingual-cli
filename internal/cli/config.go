@@ -11,13 +11,10 @@ import (
 
 const defaultBaseURL = "https://api.pylingual.io"
 
-// ErrUsage indicates invalid command-line usage after usage text has been printed.
 var ErrUsage = errors.New("usage error")
 
-// ErrHelp indicates help text was requested.
 var ErrHelp = errors.New("help requested")
 
-// Config contains validated command-line settings.
 type Config struct {
 	BaseURL      string
 	Concurrency  int
@@ -28,7 +25,6 @@ type Config struct {
 	Timeout      time.Duration
 }
 
-// Parse validates CLI flags and positional input paths.
 func Parse(args []string, stderr io.Writer) (Config, error) {
 	var cfg Config
 
