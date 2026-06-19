@@ -14,21 +14,6 @@ The binary is written to:
 bin/pylingual
 ```
 
-## Install
-
-Copy the built binary into `/usr/local/bin`:
-
-```sh
-sudo cp bin/pylingual /usr/local/bin/pylingual
-sudo chmod +x /usr/local/bin/pylingual
-```
-
-Confirm it is available:
-
-```sh
-pylingual -h
-```
-
 ## Usage
 
 Decompile one file:
