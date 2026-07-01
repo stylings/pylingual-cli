@@ -211,7 +211,7 @@ func (m model) visibleRows() ([]rowState, int) {
 	}
 	remaining = maxRows - len(rows)
 	if remaining > 0 {
-		rows = append(rows, queued[:minInt(remaining, len(queued))]...)
+		rows = append(rows, queued[:min(remaining, len(queued))]...)
 	}
 
 	if len(rows) > maxRows {
@@ -285,9 +285,3 @@ func truncateMiddle(value string, max int) string {
 	return value[:left] + "..." + value[len(value)-right:]
 }
 
-func minInt(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
