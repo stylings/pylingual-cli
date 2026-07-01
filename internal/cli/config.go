@@ -41,7 +41,7 @@ func Parse(args []string, stderr io.Writer) (Config, error) {
 		fs.PrintDefaults()
 	}
 
-	normalized, err := normalizeArgs(args)
+	normalized, err := normalizeArgs(fs, args)
 	if err != nil {
 		return Config{}, err
 	}
@@ -74,7 +74,13 @@ func Parse(args []string, stderr io.Writer) (Config, error) {
 	return cfg, nil
 }
 
-func normalizeArgs(args []string) ([]string, error) {
+// boolFlag matches the unexported interface flag.Value implementations use
+// to mark themselves as not needing a value (see flag package docs).
+type boolFlag interface {
+	IsBoolFlag() bool
+}
+
+func normalizeArgs(fs *flag.FlagSet, args []string) ([]string, error) {
 	var flags []string
 	var positional []string
 	for i := 0; i < len(args); i++ {
@@ -90,16 +96,21 @@ func normalizeArgs(args []string) ([]string, error) {
 
 		flags = append(flags, arg)
 		name, hasInlineValue := splitFlag(arg)
-		if hasInlineValue || isBoolFlag(name) {
+		if hasInlineValue {
 			continue
 		}
-		if isValueFlag(name) {
-			if i+1 >= len(args) {
-				return nil, fmt.Errorf("%s requires a value", arg)
-			}
-			i++
-			flags = append(flags, args[i])
+		f := fs.Lookup(name)
+		if f == nil {
+			continue // unknown flag; fs.Parse will report the error
 		}
+		if bf, ok := f.Value.(boolFlag); ok && bf.IsBoolFlag() {
+			continue
+		}
+		if i+1 >= len(args) {
+			return nil, fmt.Errorf("%s requires a value", arg)
+		}
+		i++
+		flags = append(flags, args[i])
 	}
 
 	return append(flags, positional...), nil
@@ -107,22 +118,6 @@ func normalizeArgs(args []string) ([]string, error) {
 
 func splitFlag(arg string) (string, bool) {
 	trimmed := strings.TrimLeft(arg, "-")
-	name, value, ok := strings.Cut(trimmed, "=")
-	if ok {
-		_ = value
-	}
+	name, _, ok := strings.Cut(trimmed, "=")
 	return name, ok
-}
-
-func isBoolFlag(name string) bool {
-	return name == "plain" || name == "h" || name == "help"
-}
-
-func isValueFlag(name string) bool {
-	switch name {
-	case "j", "o", "poll-interval", "timeout", "base-url":
-		return true
-	default:
-		return false
-	}
 }
