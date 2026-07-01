@@ -10,6 +10,7 @@ import (
 	"mime/multipart"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -112,8 +113,8 @@ func (c *Client) Upload(ctx context.Context, path string) (*UploadResponse, erro
 func (c *Client) Poll(ctx context.Context, identifier string) (*ProgressResponse, error) {
 	var out *ProgressResponse
 	err := retry(ctx, func() error {
-		url := fmt.Sprintf("%s/get_progress?identifier=%s", c.baseURL, identifier)
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+		reqURL := fmt.Sprintf("%s/get_progress?identifier=%s", c.baseURL, url.QueryEscape(identifier))
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
 		if err != nil {
 			return err
 		}
@@ -139,8 +140,8 @@ func (c *Client) Poll(ctx context.Context, identifier string) (*ProgressResponse
 func (c *Client) Fetch(ctx context.Context, identifier string) (*ViewResponse, error) {
 	var out *ViewResponse
 	err := retry(ctx, func() error {
-		url := fmt.Sprintf("%s/view_chimera?identifier=%s", c.baseURL, identifier)
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+		reqURL := fmt.Sprintf("%s/view_chimera?identifier=%s", c.baseURL, url.QueryEscape(identifier))
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
 		if err != nil {
 			return err
 		}
