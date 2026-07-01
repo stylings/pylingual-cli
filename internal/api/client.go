@@ -79,19 +79,8 @@ func NewClient(cfg Config) *Client {
 	return &Client{
 		baseURL: strings.TrimRight(cfg.BaseURL, "/"),
 		headers: map[string]string{
-			"User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0",
-			"Accept":          "*/*",
-			"Accept-Language": "en-US",
-			"Referer":         "https://www.pylingual.io/",
-			"Origin":          "https://www.pylingual.io",
-			"DNT":             "1",
-			"Sec-GPC":         "1",
-			"Connection":      "keep-alive",
-			"Sec-Fetch-Dest":  "empty",
-			"Sec-Fetch-Mode":  "cors",
-			"Sec-Fetch-Site":  "same-site",
-			"Priority":        "u=4",
-			"TE":              "trailers",
+			"User-Agent": "pylingual-cli",
+			"Accept":     "*/*",
 		},
 		http: &http.Client{Timeout: timeout},
 	}
