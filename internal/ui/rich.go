@@ -71,7 +71,7 @@ func RunRich(ctx context.Context, cancel context.CancelFunc, jobs []job.Job, eve
 		events:  events,
 		rows:    rows,
 		summary: runner.Summary{Total: len(jobs)},
-	}, tea.WithContext(ctx), tea.WithoutSignalHandler(), tea.WithInput(nil))
+	}, tea.WithContext(ctx), tea.WithoutSignalHandler())
 
 	done := make(chan struct{})
 	defer close(done)
