@@ -45,4 +45,4 @@ make check
 
 ## License
 
-MIT © 2026 identities@tuta.com. See [LICENSE](LICENSE).
+See [LICENSE](LICENSE).
