@@ -8,6 +8,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/mattn/go-isatty"
+
 	"github.com/cold/pylingual-cli/internal/api"
 	"github.com/cold/pylingual-cli/internal/cli"
 	"github.com/cold/pylingual-cli/internal/files"
@@ -54,7 +56,7 @@ func main() {
 	})
 
 	events := run.Start(ctx, discovery.Jobs)
-	plain := cfg.Plain || os.Getenv("CI") != "" || !isTerminal(os.Stdout)
+	plain := cfg.Plain || os.Getenv("CI") != "" || !isatty.IsTerminal(os.Stdout.Fd())
 
 	var summary runner.Summary
 	if plain {
@@ -73,9 +75,4 @@ func main() {
 	if summary.Failed > 0 {
 		os.Exit(1)
 	}
-}
-
-func isTerminal(file *os.File) bool {
-	info, err := file.Stat()
-	return err == nil && info.Mode()&os.ModeCharDevice != 0
 }
