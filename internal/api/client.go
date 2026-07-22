@@ -100,36 +100,17 @@ func (c *Client) Upload(ctx context.Context, path string) (*UploadResponse, erro
 }
 
 func (c *Client) Poll(ctx context.Context, identifier string) (*ProgressResponse, error) {
-	var out *ProgressResponse
-	err := retry(ctx, func() error {
-		reqURL := fmt.Sprintf("%s/get_progress?identifier=%s", c.baseURL, url.QueryEscape(identifier))
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
-		if err != nil {
-			return err
-		}
-		c.applyHeaders(req)
-		resp, err := c.http.Do(req)
-		if err != nil {
-			return err
-		}
-		defer resp.Body.Close()
-		if err := checkStatus(resp); err != nil {
-			return err
-		}
-		var decoded ProgressResponse
-		if err := json.NewDecoder(resp.Body).Decode(&decoded); err != nil {
-			return err
-		}
-		out = &decoded
-		return nil
-	})
-	return out, err
+	return doGet[ProgressResponse](c, ctx, "get_progress", identifier)
 }
 
 func (c *Client) Fetch(ctx context.Context, identifier string) (*ViewResponse, error) {
-	var out *ViewResponse
+	return doGet[ViewResponse](c, ctx, "view_chimera", identifier)
+}
+
+func doGet[T any](c *Client, ctx context.Context, path, identifier string) (*T, error) {
+	var out *T
 	err := retry(ctx, func() error {
-		reqURL := fmt.Sprintf("%s/view_chimera?identifier=%s", c.baseURL, url.QueryEscape(identifier))
+		reqURL := fmt.Sprintf("%s/%s?identifier=%s", c.baseURL, path, url.QueryEscape(identifier))
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
 		if err != nil {
 			return err
@@ -143,7 +124,7 @@ func (c *Client) Fetch(ctx context.Context, identifier string) (*ViewResponse, e
 		if err := checkStatus(resp); err != nil {
 			return err
 		}
-		var decoded ViewResponse
+		var decoded T
 		if err := json.NewDecoder(resp.Body).Decode(&decoded); err != nil {
 			return err
 		}
