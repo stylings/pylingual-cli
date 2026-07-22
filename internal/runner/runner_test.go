@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/cold/pylingual-cli/internal/api"
-	"github.com/cold/pylingual-cli/internal/job"
 )
 
 type fakeClient struct {
@@ -52,7 +51,7 @@ func (f *fakeClient) Fetch(ctx context.Context, identifier string) (*api.ViewRes
 func TestRunnerWritesSuccessfulOutput(t *testing.T) {
 	out := filepath.Join(t.TempDir(), "pkg", "mod.py")
 	run := New(&fakeClient{}, Config{Concurrency: 1, PollInterval: time.Millisecond})
-	events := run.Start(context.Background(), []job.Job{{
+	events := run.Start(context.Background(), []Job{{
 		ID:         0,
 		InputPath:  "mod.pyc",
 		OutputPath: out,
@@ -76,7 +75,7 @@ func TestRunnerWritesSuccessfulOutput(t *testing.T) {
 
 func TestRunnerEmitsUploadFailure(t *testing.T) {
 	run := New(&fakeClient{uploadErr: errors.New("boom")}, Config{Concurrency: 1, PollInterval: time.Millisecond})
-	events := run.Start(context.Background(), []job.Job{{
+	events := run.Start(context.Background(), []Job{{
 		ID:         0,
 		InputPath:  "mod.pyc",
 		OutputPath: filepath.Join(t.TempDir(), "mod.py"),
@@ -118,7 +117,7 @@ func TestNormalizePythonSource(t *testing.T) {
 func TestRunnerNormalizesOutputLineEndings(t *testing.T) {
 	out := filepath.Join(t.TempDir(), "mod.py")
 	run := New(&fakeClient{content: "a\r\nb\r# return None"}, Config{Concurrency: 1, PollInterval: time.Millisecond})
-	events := run.Start(context.Background(), []job.Job{{
+	events := run.Start(context.Background(), []Job{{
 		ID:         0,
 		InputPath:  "mod.pyc",
 		OutputPath: out,

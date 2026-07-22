@@ -8,11 +8,11 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/cold/pylingual-cli/internal/job"
+	"github.com/cold/pylingual-cli/internal/runner"
 )
 
 type Discovery struct {
-	Jobs     []job.Job
+	Jobs     []runner.Job
 	Warnings []string
 }
 
@@ -46,7 +46,7 @@ func Discover(inputs []string, outDir string) (Discovery, error) {
 		}
 		output := filepath.Join(outDir, pyOutputName(filepath.Base(input)))
 		output = uniqueOutputPath(output, usedOutputs)
-		result.Jobs = append(result.Jobs, job.Job{InputPath: input, OutputPath: output})
+		result.Jobs = append(result.Jobs, runner.Job{InputPath: input, OutputPath: output})
 	}
 
 	sort.Slice(result.Jobs, func(i, j int) bool {
@@ -59,14 +59,14 @@ func Discover(inputs []string, outDir string) (Discovery, error) {
 	return result, nil
 }
 
-func discoverDir(input string, outDir string) ([]job.Job, []string, error) {
+func discoverDir(input string, outDir string) ([]runner.Job, []string, error) {
 	root := filepath.Clean(input)
 	rootLabel := filepath.Base(root)
 	if rootLabel == "." || rootLabel == string(filepath.Separator) {
 		rootLabel = ""
 	}
 
-	var jobs []job.Job
+	var jobs []runner.Job
 	var warnings []string
 	err := filepath.WalkDir(root, func(path string, entry fs.DirEntry, err error) error {
 		if err != nil {
@@ -83,7 +83,7 @@ func discoverDir(input string, outDir string) ([]job.Job, []string, error) {
 		}
 		outputRel := strings.TrimSuffix(rel, filepath.Ext(rel)) + ".py"
 		output := filepath.Join(outDir, rootLabel, outputRel)
-		jobs = append(jobs, job.Job{InputPath: path, OutputPath: output})
+		jobs = append(jobs, runner.Job{InputPath: path, OutputPath: output})
 		return nil
 	})
 	if err != nil {

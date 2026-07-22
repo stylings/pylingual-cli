@@ -11,7 +11,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"github.com/cold/pylingual-cli/internal/job"
 	"github.com/cold/pylingual-cli/internal/runner"
 )
 
@@ -51,7 +50,7 @@ var (
 	summaryStyle = lipgloss.NewStyle().Bold(true)
 )
 
-func RunRich(ctx context.Context, cancel context.CancelFunc, jobs []job.Job, events <-chan runner.Event) (runner.Summary, error) {
+func RunRich(ctx context.Context, cancel context.CancelFunc, jobs []runner.Job, events <-chan runner.Event) (runner.Summary, error) {
 	spin := spinner.New()
 	spin.Spinner = spinner.Dot
 
@@ -284,4 +283,3 @@ func truncateMiddle(value string, max int) string {
 	right := max - 3 - left
 	return value[:left] + "..." + value[len(value)-right:]
 }
-

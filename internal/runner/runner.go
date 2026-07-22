@@ -10,8 +10,13 @@ import (
 	"time"
 
 	"github.com/cold/pylingual-cli/internal/api"
-	"github.com/cold/pylingual-cli/internal/job"
 )
+
+type Job struct {
+	ID         int
+	InputPath  string
+	OutputPath string
+}
 
 type Status string
 
@@ -69,13 +74,13 @@ func New(client Client, cfg Config) *Runner {
 	return &Runner{client: client, cfg: cfg}
 }
 
-func (r *Runner) Start(ctx context.Context, jobs []job.Job) <-chan Event {
+func (r *Runner) Start(ctx context.Context, jobs []Job) <-chan Event {
 	events := make(chan Event, len(jobs)+r.cfg.Concurrency)
 
 	go func() {
 		defer close(events)
 
-		work := make(chan job.Job)
+		work := make(chan Job)
 		var wg sync.WaitGroup
 		for i := 0; i < r.cfg.Concurrency; i++ {
 			wg.Add(1)
@@ -103,7 +108,7 @@ func (r *Runner) Start(ctx context.Context, jobs []job.Job) <-chan Event {
 	return events
 }
 
-func (r *Runner) process(ctx context.Context, planned job.Job, events chan<- Event) {
+func (r *Runner) process(ctx context.Context, planned Job, events chan<- Event) {
 	emit := func(status Status, stage string, err error) bool {
 		event := Event{
 			JobID:      planned.ID,

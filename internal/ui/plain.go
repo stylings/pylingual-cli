@@ -5,11 +5,10 @@ import (
 	"io"
 	"path/filepath"
 
-	"github.com/cold/pylingual-cli/internal/job"
 	"github.com/cold/pylingual-cli/internal/runner"
 )
 
-func RunPlain(out io.Writer, jobs []job.Job, events <-chan runner.Event) runner.Summary {
+func RunPlain(out io.Writer, jobs []runner.Job, events <-chan runner.Event) runner.Summary {
 	summary := runner.Summary{Total: len(jobs)}
 	lastStage := make(map[int]string, len(jobs))
 
